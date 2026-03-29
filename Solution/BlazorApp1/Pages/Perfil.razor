@@ -1,0 +1,158 @@
+﻿@page "/perfil"
+
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-8">
+    <MudText Typo="Typo.h4">
+        Perfil
+    </MudText>
+
+    <MudCard Outlined="true" Class="pa-4" Elevation="0">
+        <MudCardHeader>
+            <CardHeaderContent>
+                <div class="d-flex align-center">
+                    @* Icono de Google en el Título *@
+                    <MudIcon Icon="@Icons.Custom.Brands.Google" Color="Color.Default" Class="mr-2" />
+                    <MudText Typo="Typo.h6">Conexión con Google para Calendar</MudText>
+                </div>
+            </CardHeaderContent>
+        </MudCardHeader>
+    
+        <MudCardContent>
+            <MudStack Spacing="1">
+                <div class="d-flex align-center">
+                    <MudText Typo="Typo.body1" Class="mr-2">Estado de la conexión:</MudText>
+                    <MudIcon Icon="@GetStatusIcon()" Color="@GetStatusColor()" Size="Size.Small" Class="mr-1" />
+                    @* Texto formateado con espacios *@
+                    <MudText Typo="Typo.body1" Color="@GetStatusColor()" Style="font-weight: 700">
+                        @GetStatusText()
+                    </MudText>
+                </div>
+
+                @if (_config.Status != GoogleConnectionStatus.SinConectar)
+                {
+                    <div class="d-flex align-center">
+                        @if (_config.Status == GoogleConnectionStatus.Erroneo)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Error">
+                                <b>Error:</b> @(_config.ErrorMessage ?? "Token expirado o revocado")
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
+                                Última conexión: @(_config.LastConnection?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                            </MudText>
+                        }
+                    </div>
+                }
+            </MudStack>
+        </MudCardContent>
+
+        <MudCardActions>
+            @* Botón con color dinámico (Rojo para conectar, Azul para comprobar) *@
+            <MudButton Variant="Variant.Filled"
+                       Color="@GetButtonColor()"
+                       OnClick="HandleConnectionAction"
+                       Disabled="_isProcessing"
+                       StartIcon="@Icons.Custom.Brands.Google">
+                @if (_isProcessing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Procesando...</MudText>
+                }
+                else
+                {
+                    @GetButtonText()
+                }
+            </MudButton>
+
+            <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="SimularError">
+                Forzar Error UI
+            </MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    public enum GoogleConnectionStatus
+    {
+        SinConectar,
+        Conectado,
+        Erroneo
+    }
+
+    public class GoogleAuthConfig
+    {
+        public GoogleConnectionStatus Status { get; set; } = GoogleConnectionStatus.SinConectar;
+        public DateTime? LastConnection { get; set; }
+        public string? ErrorMessage { get; set; }
+    }
+
+    private void SimularError()
+    {
+        _config.Status = GoogleConnectionStatus.Erroneo;
+        _config.ErrorMessage = "Error 403: El usuario ha revocado los permisos de acceso desde Google Settings.";
+        StateHasChanged(); // Fuerza a Blazor a repintar la pantalla
+    }
+
+    //EMPIEZA AQUÍ EL CÓDIGO REAL
+    private GoogleAuthConfig _config = new() { Status = GoogleConnectionStatus.SinConectar };
+    private bool _isProcessing = false;
+
+    // 1. Manejo de texto con espacios
+    private string GetStatusText() => _config.Status switch
+    {
+        GoogleConnectionStatus.SinConectar => "Sin Conectar",
+        GoogleConnectionStatus.Erroneo => "Erróneo",
+        _ => _config.Status.ToString()
+    };
+
+    // 2. Iconos Dinámicos
+    private string GetStatusIcon() => _config.Status switch
+    {
+        GoogleConnectionStatus.Conectado => Icons.Material.Filled.CheckCircle,
+        GoogleConnectionStatus.Erroneo => Icons.Material.Filled.Error,
+        _ => Icons.Material.Filled.CloudOff
+    };
+
+    // 3. Colores Dinámicos
+    private Color GetStatusColor() => _config.Status switch
+    {
+        GoogleConnectionStatus.Conectado => Color.Success,
+        GoogleConnectionStatus.Erroneo => Color.Error,
+        _ => Color.Default
+    };
+
+    // 4. Color del botón (Azul si ya está conectado/error, Rojo si está virgen)
+    private Color GetButtonColor() => _config.Status switch
+    {
+        GoogleConnectionStatus.SinConectar => Color.Error,
+        _ => Color.Info // El color azul de MudBlazor
+    };
+
+    private string GetButtonText() => _config.Status switch
+    {
+        GoogleConnectionStatus.SinConectar => "CONECTAR CON GOOGLE",
+        _ => "COMPROBAR ESTADO DE CONEXIÓN"
+    };
+
+    private async Task HandleConnectionAction()
+    {
+        _isProcessing = true;
+        await Task.Delay(1500); // Simulación
+        
+        if (_config.Status == GoogleConnectionStatus.SinConectar)
+        {
+            _config.Status = GoogleConnectionStatus.Conectado;
+            _config.LastConnection = DateTime.Now;
+            Snackbar.Add("Conexión establecida", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Estado verificado", Severity.Info);
+        }
+        _isProcessing = false;
+    }
+}
+

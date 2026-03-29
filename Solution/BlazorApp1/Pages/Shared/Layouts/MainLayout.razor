@@ -1,0 +1,62 @@
+﻿@inherits LayoutComponentBase
+
+@* Required Mudblazor *@
+<MudThemeProvider />
+<MudPopoverProvider />
+@* Needed for dialogs *@
+<MudDialogProvider />
+@* Needed for snackbars *@
+<MudSnackbarProvider />
+
+<MudLayout>
+    <!-- Barra superior -->
+    <MudAppBar Elevation="1" Dense="true" Class="topbar">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="ToggleDrawer" />
+
+        <MudSpacer />
+
+        <div class="sidebar-header">
+            <MudLink Href="/" Typo="Typo.h6" Class="brand-text" Color="Color.Inherit" Underline="Underline.None">
+                Título Aplicación
+            </MudLink>
+        </div>
+
+        <MudSpacer />
+
+        <MudIconButton Icon="@Icons.Material.Filled.NotificationsNone"
+                       Color="Color.Inherit" />
+
+        <MudBadge Content="50" Color="Color.Success" Overlap="true" Class="mx-2">
+            <MudAvatar Size="Size.Small" Icon="@Icons.Material.Filled.PersonOutline" />
+        </MudBadge>
+    </MudAppBar>
+
+    <!-- Barra lateral -->
+    <MudDrawer @bind-Open="_drawerOpen"
+               Elevation="1"
+               Variant="DrawerVariant.Mini"
+               OpenMiniOnHover="true"
+               ClipMode="DrawerClipMode.Always"
+               Class="sidebar">
+        <NavMenu />
+    </MudDrawer>
+
+    <!-- Contenido -->
+    <MudMainContent Class="main-content">
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-6">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

@@ -1,0 +1,162 @@
+﻿@page "/mudblazor"
+
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-8">
+    <MudText Typo="Typo.h3" GutterBottom="true">Componentes MudBlazor</MudText>
+    <MudText Class="mb-8">Ejemplos de los componentes más utilizados en .NET 10.</MudText>
+
+    <MudGrid>
+        @* --- SECCIÓN DE FORMULARIOS --- *@
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="3">
+                <MudText Typo="Typo.h6" Class="mb-4">Entrada de Datos</MudText>
+                
+                <MudTextField @bind-Value="_texto" Label="Nombre de Usuario" Variant="Variant.Outlined" Margin="Margin.Dense" Class="mb-4" />
+                
+                <MudSelect T="string" Label="Rol de Usuario" @bind-Value="_rol" Variant="Variant.Filled" Class="mb-4">
+                    <MudSelectItem Value="@("Admin")">Administrador</MudSelectItem>
+                    <MudSelectItem Value="@("Editor")">Editor</MudSelectItem>
+                    <MudSelectItem Value="@("Viewer")">Visor</MudSelectItem>
+                </MudSelect>
+
+                <MudSwitch @bind-Value="_notificaciones" Color="Color.Primary" Label="Activar Notificaciones" />
+                
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="MostrarInfo" Class="mt-4">
+                    Procesar Datos
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+
+        @* --- SECCIÓN DE FEEDBACK --- *@
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="3">
+                <MudText Typo="Typo.h6" Class="mb-4">Interacción y Diálogos</MudText>
+                
+                <MudAlert Severity="Severity.Info" Class="mb-4">Este es un mensaje informativo de sistema.</MudAlert>
+                
+                <MudStack Row="true">
+                    <MudButton OnClick="AbrirDialogo" Variant="Variant.Outlined" Color="Color.Secondary">
+                        Abrir Modal
+                    </MudButton>
+                    <MudTooltip Text="¡Hola! Soy un Tooltip">
+                        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Info" />
+                    </MudTooltip>
+                </MudStack>
+
+                <MudProgressLinear Color="Color.Secondary" Value="@_progreso" Class="my-7" />
+                <MudText Typo="Typo.caption">Progreso de la tarea: @_progreso%</MudText>
+            </MudPaper>
+        </MudItem>
+
+        @* --- SECCIÓN DE VISUALIZACIÓN --- *@
+        <MudItem xs="12" Class="mt-8">
+            <MudTable Items="@_usuarios" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+                <HeaderContent>
+                    <MudTh>ID</MudTh>
+                    <MudTh>Nombre</MudTh>
+                    <MudTh>Estado</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="ID">@context.Id</MudTd>
+                    <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
+                    <MudTd DataLabel="Estado">
+                        <MudChip T="string" Color="@(context.Activo? Color.Success: Color.Error)" Size="Size.Small">
+                            @(context.Activo ? "Activo" : "Inactivo")
+                        </MudChip>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+
+         @* --- SECCIÓN DE CARD --- *@
+        <MudItem xs="12" Class="mt-8">
+            <MudCard>
+                <MudCardMedia Image="painted-door.jpg" Height="200" />
+
+                <MudCardContent>
+                    <MudText Typo="Typo.h5">TARJETA</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        @* --- SECCIÓN DE MudDataGrid --- *@
+        <MudItem xs="12" Class="mt-6">
+            <MudDataGrid Items="@_usuarios" Filterable="true" SortMode="SortMode.Multiple" Groupable="false">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Gestión de Usuarios (DataGrid)</MudText>
+                    <MudSpacer />
+                    <MudTextField @bind-Value="_searchString" Placeholder="Buscar..." Adornment="Adornment.Start"
+                                  Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Property="x => x.Id" Title="ID" Filterable="false" />
+                    <PropertyColumn Property="x => x.Nombre" Title="Nombre Completo" Filterable="true" />
+                    <PropertyColumn Property="x => x.Activo" Title="Estado">
+                        <CellTemplate>
+                            <MudIcon Icon="@(context.Item.Activo? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Error)"
+                                     Color="@(context.Item.Activo ? Color.Success : Color.Error)" />
+                        </CellTemplate>
+                    </PropertyColumn>
+                    <TemplateColumn CellClass="d-flex justify-end">
+                        <CellTemplate>
+                            <MudButton Size="@Size.Small" Variant="@Variant.Outlined" Color="Color.Primary"
+                                       OnClick="@(() => Snackbar.Add($"Editando a {context.Item.Nombre}"))">
+                                Editar
+                            </MudButton>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="Usuario" />
+                </PagerContent>
+            </MudDataGrid>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code {
+    private string _texto = "";
+    private string _rol = "Viewer";
+    private bool _notificaciones = true;
+    private int _progreso = 65;
+    private bool _loading = false;
+
+    private List<Usuario> _usuarios = new()
+    {
+        new Usuario { Id = 1, Nombre = "Ana García", Activo = true },
+        new Usuario { Id = 2, Nombre = "Luis Pérez", Activo = false },
+        new Usuario { Id = 3, Nombre = "Marta Ruiz", Activo = true }
+    };
+
+    private void MostrarInfo()
+    {
+        Snackbar.Add($"Usuario: {_texto} guardado con éxito como {_rol}", Severity.Success);
+    }
+
+    private async Task AbrirDialogo()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<MudDialog>("Confirmación", options);
+        // Aquí podrías capturar el resultado si el diálogo fuera un componente aparte
+    }
+
+    public class Usuario
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public bool Activo { get; set; }
+    }
+
+    //MUDDATAGRID
+    private string _searchString = "";
+    // Nota: El filtrado por texto externo requiere un poco más de lógica en el parámetro QuickFilter,
+    // pero el filtrado por columna (iconos de embudo) ya funciona solo con 'Filterable="true"'.
+}

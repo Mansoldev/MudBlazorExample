@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+
+<MudNavMenu Class="nav-menu">
+    @* Icon="@Icons.Material.Filled.Home" *@
+    @* <MudNavLink Href="/" Match="NavLinkMatch.All">
+        <div class="sidebar-header">
+            <MudText Typo="Typo.h6" Class="brand-text">wayop</MudText>
+        </div>
+    </MudNavLink> *@
+
+    <MudNavLink Href="/b" Icon="@Icons.Material.Filled.BookOnline">
+        B
+    </MudNavLink>
+
+    <MudNavLink Href="/t" Icon="@Icons.Material.Filled.Map">
+        T
+    </MudNavLink>
+
+    <MudNavLink Href="/r" Icon="@Icons.Material.Filled.Handyman">
+        R
+    </MudNavLink>
+
+    <MudNavLink Href="/i" Icon="@Icons.Material.Filled.ReceiptLong">
+        I
+    </MudNavLink>
+
+    <MudNavLink Href="/s" Icon="@Icons.Material.Filled.Settings">
+        S
+    </MudNavLink>
+
+    <MudNavLink Href="/u" Icon="@Icons.Material.Filled.Group">
+        U
+    </MudNavLink>
+
+    <MudDivider Class="my-4" />
+
+    <MudNavLink Href="/d" Icon="@Icons.Material.Filled.Description">
+        D
+    </MudNavLink>
+
+    <MudNavLink Href="/f" Icon="@Icons.Material.Filled.Feedback">
+        F
+    </MudNavLink>
+
+</MudNavMenu>
