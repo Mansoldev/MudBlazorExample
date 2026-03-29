@@ -1,0 +1,44 @@
+## --- Específico de .NET / Visual Studio ---
+[Bb]in/
+[Oo]bj/
+[Tt]est[Rr]esults/
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+
+## --- Secretos y Configuración Local (¡Importante!) ---
+appsettings.Development.json
+appsettings.Local.json
+*.secrets.json
+.env
+
+## --- Paquetes y Herramientas ---
+.nuget/
+packages/
+*.nupkg
+# Si usas LibMan para librerías estáticas
+wwwroot/lib/
+
+## --- Blazor & Web ---
+.clippy/
+node_modules/
+.npm/
+dist/
+publish/
+.azure/
+.aws/
+
+## --- Logs y Temporales ---
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+## --- Herramientas de Análisis y Cobertura ---
+.sonarqube/
+.config/dotnet-tools.json
+*.suo
+*.user
+*.sln.idsymb
